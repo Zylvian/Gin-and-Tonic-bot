@@ -14,7 +14,7 @@ int loadButtonPin = 5;
 /// Pump to glass tube: 30cm
 
 // Time it takes for liquid to move from start to end of tube.
-long pump_cycle_time = 96000;
+long pump_cycle_time = 9600;
 
 // Amount of gin and tonic to be dispensed (in cl).
 unsigned long gin_amount = 1;
