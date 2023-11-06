@@ -20,10 +20,14 @@ int tonic_amount = 80;
 int cl_time = 8500;
 
 // Time when button was pressed;
-int buttonPressedTime = 0;
-bool isPourint = false;
+unsigned long buttonPressedTime = 0;
+bool isPouring = false;
 
+// Pump 1 is usually for gin, pump 2 is for tonic.
+unsigned long pump1remaining = 0;
+unsigned long pump2remaining = 0;
 
+uint8_t pourButtonState;
 // Setup
 void setup() {
 
@@ -41,20 +45,22 @@ void setup() {
 
 void loop() {
 
-  /*pourGT();
-
-  delay(10000);*/
+  pourButtonState = digitalRead(pourButtonPin);
 
   if(isPouring == false) {
-      controlPumps(3, off);
-      uint8_t pourButtonState = digitalRead(pourButtonPin);
+      // Check if button is pressed.
         if(pourButtonState == LOW){
           buttonPressed();
-          pourGT();
+          startPourGT();
         }
   }
   if(isPouring == true){
-    
+      // Check if button is pressed, treat as interrupt and disable pumps.
+      if(pourButtonState == LOW){
+          controlPumps(3, false);
+        }
+      // If not, continue pouring.
+    continuePour();
   }
 
 
@@ -74,16 +80,27 @@ void loadDrink(){
   controlPumps(3, false);
 }
 
-void pourGT(){
+void startPourGT(){
   controlPumps(3, true);
-  
-  delay(tonic_amount*cl_time);
-  controlPumps(1, false);
-  
-  int remaining_time = gin_amount - tonic_amount;
-  delay(remaining_time*cl_time);
-  
-  controlPumps(3, false);
+  pump1remaining = gin_amount*cl_time;
+  pump2remaining = tonic_amount*cl_time;
+}
+
+void continuePour(){
+  unsigned long timeSinceButton = millis() - buttonPressedTime;
+  pump1remaining = pump1remaining - timeSinceButton;
+  pump2remaining = pump2remaining - timeSinceButton;
+  // Pump 1 check
+  if(pump1remaining <= 0){
+    controlPumps(2, false);
+  }
+  if(pump2remaining <= 0){
+    controlPumps(1, false);
+  }
+
+  if(pump1remaining <= 0 && pump2remaining <= 0){
+    isPouring = false;
+  }
 }
 
 // int which:
