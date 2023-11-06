@@ -14,7 +14,10 @@ int pump_cycle_time = 20000;
 
 // Amount of gin and tonic to be dispensed (in cl).
 int gin_amount = 20;
-int tonic_amount = 80;
+//int tonic_amount = 80;
+
+// Test amount
+int tonic_amount = 10;
 
 // Time it takes to dispense a centiliter
 int cl_time = 8500;
@@ -27,6 +30,8 @@ bool isPouring = false;
 unsigned long pump1remaining = 0;
 unsigned long pump2remaining = 0;
 
+unsigned long timeSinceButton = 0;
+unsigned long timeStopped = 0;
 
 // Setup
 void setup() {
@@ -47,18 +52,24 @@ void loop() {
 
   uint8_t pourButtonState = digitalRead(pourButtonPin);
 
-  if(isPouring == false) {
+  if(isPouring == false && (millis() - timeStopped > 1000)) {
       // Check if button is pressed.
         if(pourButtonState == LOW){
+          Serial.println("GT pouring started!");
           buttonPressed();
           startPourGT();
         }
   }
   if(isPouring == true){
+      timeSinceButton = millis() - buttonPressedTime;
       // Check if button is pressed, treat as interrupt and disable pumps.
       if(pourButtonState == LOW){
-          controlPumps(3, false);
+        Serial.println(buttonPressedTime, DEC);
+        if(!(timeSinceButton < 1000)){
+          Serial.println("Attempted interrupt of pumps");
+          stopPour();
         }
+       }
         // If not, continue pouring.
       else{
         continuePour();
@@ -84,26 +95,36 @@ void loadDrink(){
 }
 
 void startPourGT(){
+  isPouring = true;
   controlPumps(3, true);
   pump1remaining = gin_amount*cl_time;
   pump2remaining = tonic_amount*cl_time;
+
+  Serial.println(pump1remaining);
+  Serial.println(timeSinceButton);
 }
 
 void continuePour(){
-  unsigned long timeSinceButton = millis() - buttonPressedTime;
-  pump1remaining = pump1remaining - timeSinceButton;
-  pump2remaining = pump2remaining - timeSinceButton;
   // Pump 1 check
-  if(pump1remaining <= 0){
+  bool stopPump1 = pump1remaining <= timeSinceButton;
+  bool stopPump2 = pump2remaining <= timeSinceButton
+  if(stoPump1){
     controlPumps(1, false);
   }
-  if(pump2remaining <= 0){
+  if(stopPump2){
     controlPumps(2, false);
   }
 
-  if(pump1remaining <= 0 && pump2remaining <= 0){
-    isPouring = false;
+  if(stopPump1 && stopPump2){
+    stopPour();
   }
+}
+
+void stopPour(){
+  timeStopped = millis();
+  timeSinceButton = 0;
+  isPouring = false;
+  controlPumps(3, false);
 }
 
 // int which:
