@@ -9,7 +9,7 @@ int pourButtonPin = 7;
 int loadButtonPin = 5;
 
 // Time it takes for liquid to move from start to end of tube.
-int pump_cycle_time = 8000;
+int pump_cycle_time = 20000;
 
 
 // Amount of gin and tonic to be dispensed (in cl).
@@ -50,11 +50,14 @@ void loop() {
   if(loadButtonState == LOW){
     loadDrink();
   }
+
+  Serial.print(loadButtonState);
   
   delay(1);
 }
 
 void loadDrink(){
+  Serial.print("asdasd:");
   controlPumps(3, true);
   delay(pump_cycle_time);
   controlPumps(3, false);
