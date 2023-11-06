@@ -16,8 +16,12 @@ int pump_cycle_time = 20000;
 int gin_amount = 20;
 int tonic_amount = 80;
 
-// 
+// Time it takes to dispense a centiliter
 int cl_time = 8500;
+
+// Time when button was pressed;
+int buttonPressedTime = 0;
+bool isPourint = false;
 
 
 // Setup
@@ -41,23 +45,30 @@ void loop() {
 
   delay(10000);*/
 
-  uint8_t pourButtonState = digitalRead(pourButtonPin);
-  if(pourButtonState == LOW){
-    pourGT();
+  if(isPouring == false) {
+      controlPumps(3, off);
+      uint8_t pourButtonState = digitalRead(pourButtonPin);
+        if(pourButtonState == LOW){
+          buttonPressed();
+          pourGT();
+        }
+  }
+  if(isPouring == true){
+    
   }
 
-  uint8_t loadButtonState = digitalRead(loadButtonPin);
+
+  // Button dysfunctional atm
+  /*uint8_t loadButtonState = digitalRead(loadButtonPin);
   if(loadButtonState == LOW){
+    buttonPressed();
     loadDrink();
-  }
-
-  Serial.print(loadButtonState);
+  }*/
   
   delay(1);
 }
 
 void loadDrink(){
-  Serial.print("asdasd:");
   controlPumps(3, true);
   delay(pump_cycle_time);
   controlPumps(3, false);
@@ -100,4 +111,8 @@ void togglePump(int pinIn1, int pinIn2, bool on){
     Serial.println(on, DEC); 
     digitalWrite(pinIn1, on);
     digitalWrite(pinIn2, LOW);
+}
+
+void buttonPressed(){
+    buttonPressedTime = millis();
 }
