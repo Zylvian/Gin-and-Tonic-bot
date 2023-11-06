@@ -27,7 +27,7 @@ bool isPouring = false;
 unsigned long pump1remaining = 0;
 unsigned long pump2remaining = 0;
 
-uint8_t pourButtonState;
+
 // Setup
 void setup() {
 
@@ -45,7 +45,7 @@ void setup() {
 
 void loop() {
 
-  pourButtonState = digitalRead(pourButtonPin);
+  uint8_t pourButtonState = digitalRead(pourButtonPin);
 
   if(isPouring == false) {
       // Check if button is pressed.
@@ -59,8 +59,11 @@ void loop() {
       if(pourButtonState == LOW){
           controlPumps(3, false);
         }
-      // If not, continue pouring.
-    continuePour();
+        // If not, continue pouring.
+      else{
+        continuePour();
+      }
+      
   }
 
 
@@ -92,10 +95,10 @@ void continuePour(){
   pump2remaining = pump2remaining - timeSinceButton;
   // Pump 1 check
   if(pump1remaining <= 0){
-    controlPumps(2, false);
+    controlPumps(1, false);
   }
   if(pump2remaining <= 0){
-    controlPumps(1, false);
+    controlPumps(2, false);
   }
 
   if(pump1remaining <= 0 && pump2remaining <= 0){
