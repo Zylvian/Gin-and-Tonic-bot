@@ -17,8 +17,8 @@ int loadButtonPin = 5;
 long pump_cycle_time = 9600;
 
 // Amount of gin and tonic to be dispensed (in cl).
-unsigned long gin_amount = 1;
-unsigned long tonic_amount = 1;
+unsigned long gin_amount = 2;
+unsigned long tonic_amount = 4;
 
 // Time it takes to dispense a centiliter
 unsigned long cl_time = 10500;
@@ -119,10 +119,10 @@ void continuePour(){
   bool stopPump1 = pump1remaining <= timeSinceButton;
   bool stopPump2 = pump2remaining <= timeSinceButton;
 
-  Serial.print("PUMP 2: -> ");
+  /*Serial.print("PUMP 2: -> ");
   Serial.println(pump2remaining);
   Serial.print("TIME SINCE BUTTON: -> ");
-  Serial.println(timeSinceButton, DEC);
+  Serial.println(timeSinceButton, DEC);*/
   if(stopPump1){
     controlPumps(1, false);
   }
