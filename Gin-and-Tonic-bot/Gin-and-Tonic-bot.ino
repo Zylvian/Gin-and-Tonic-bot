@@ -17,11 +17,16 @@ int loadButtonPin = 5;
 long pump_cycle_time = 9600;
 
 // Amount of gin and tonic to be dispensed (in cl).
-unsigned long gin_amount = 2;
-unsigned long tonic_amount = 4;
+unsigned long gin_amount = 4;
+unsigned long tonic_amount = 8;
 
 // Time it takes to dispense a centiliter
-unsigned long cl_time = 10500;
+// Pump 1 is bottom pump, use for tonic
+// Pump 2 is top pump , use for gin
+unsigned long pump1_cl_time = 10200;
+unsigned long pump2_cl_time = 8400;
+
+//unsigned long cl_time = 10500;
 
 // Time when button was pressed;
 unsigned long buttonPressedTime = 0;
@@ -100,18 +105,8 @@ void startPourGT(){
   Serial.println("GT pouring started!");
   isPouring = true;
   controlPumps(3, true);
-  pump1remaining = gin_amount*cl_time;
-  pump2remaining = tonic_amount*cl_time;
-
-
-  Serial.println("---");
-  Serial.println(tonic_amount);
-  Serial.println(cl_time);
-  Serial.println(pump2remaining);
-  Serial.println("---");
-
-  Serial.println(pump1remaining);
-  Serial.println(timeSinceButton);
+  pump1remaining = tonic_amount*pump1_cl_time;
+  pump2remaining = gin_amount*pump2_cl_time;
 }
 
 void continuePour(){
